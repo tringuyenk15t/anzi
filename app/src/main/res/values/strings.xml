@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">anzi</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="search_hint">Input search key</string>
+
+
+    <!--Search activity-->
+    <string name="nullResult">Your query did not match any location!</string>
+    <string name="searchProgressTitle">Loading</string>
+    <string name="searchProgressMessage">Searching in progress...</string>
+
+    <!--Detail activity-->
+    <string name="detailProgressTitle">Loading</string>
+    <string name="detailProgressMessage">Getting location...</string>
+
+</resources>
