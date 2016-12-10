@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.maps.model.LatLng;
 import com.tringuyen.anzi.Constants;
 import com.tringuyen.anzi.LocalLibrary;
 import com.tringuyen.anzi.R;
@@ -34,6 +35,7 @@ public class DetailActivity extends AppCompatActivity {
     private GoogleAPI googleAPI;
     private Result mDetailLocation;
 
+    private LatLng mInitialLocation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +43,8 @@ public class DetailActivity extends AppCompatActivity {
         // get id location from bundle
         Intent intent = getIntent();
         mLocationID = intent.getStringExtra(Constants.LOCATION_ID);
+        mInitialLocation = new LatLng(intent.getDoubleExtra(Constants.INITIAL_LAT_LOCATION,0.0),
+                intent.getDoubleExtra(Constants.INITIAL_LNG_LOCATION,0.0));
         initializedView();
     }
 

@@ -2,6 +2,7 @@ package com.tringuyen.anzi.ui.map;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -28,13 +29,18 @@ import com.tringuyen.anzi.R;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback{
     private LatLng mLastLocation;
-    private GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
     private Toolbar mToolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        //get the initial location from intent
+        Intent intent = getIntent();
+        double lat = intent.getDoubleExtra(Constants.INITIAL_LAT_LOCATION,0.0);
+        double lng = intent.getDoubleExtra(Constants.INITIAL_LNG_LOCATION,0.0);
+        mLastLocation = new LatLng(lat,lng);
+
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitle(Constants.TOOLBAR_TITLE);
         setSupportActionBar(mToolbar);
@@ -62,7 +68,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setMyLocationEnabled(true);
         // Add a marker in Sydney and move the camera
         LatLng tayninh = new LatLng(11.3191665 ,106.0771732);
-            mMap.addMarker(new MarkerOptions().position(tayninh).title("Marker in Tay Ninh"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(tayninh));
+            mMap.addMarker(new MarkerOptions().position(mLastLocation).title("Marker in Tay Ninh"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(mLastLocation));
     }
 }
