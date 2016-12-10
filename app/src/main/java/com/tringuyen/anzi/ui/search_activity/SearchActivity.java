@@ -1,9 +1,14 @@
 package com.tringuyen.anzi.ui.search_activity;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.location.LocationManager;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +21,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.tringuyen.anzi.Constants;
 import com.tringuyen.anzi.R;
@@ -25,6 +33,7 @@ import com.tringuyen.anzi.network.GoogleAPI;
 import com.tringuyen.anzi.network.GoogleServiceGenerator;
 import com.tringuyen.anzi.ui.map.MapsActivity;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +42,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class SearchActivity extends AppCompatActivity implements
+        SearchView.OnQueryTextListener, GoogleApiClient.ConnectionCallbacks
+        , GoogleApiClient.OnConnectionFailedListener {
     private Toolbar mToolbar;
     private SearchView mSearchView;
     private MenuItem mSearchItem;
@@ -43,10 +54,13 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     private GoogleAPI mGoogleAPI;
     private ProgressDialog mProgressDialog;
     private List<Result> mListResult;
+    private Location mLocation;
     private LatLng mInitialLocation;
 
-    private LocationManager locationManager;
-    private android.location.LocationListener locationListener;
+    private GoogleApiClient mGoogleApiClient;
+
+
+
     /**
      * @param savedInstanceState
      */
@@ -54,6 +68,36 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         initinalizeScreen();
+
+//        implement runtime permission
+        if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this,new String[] {
+                            Manifest.permission.ACCESS_COARSE_LOCATION},
+                    Constants.PERMISSION_ACCESS_COARSE_LOCATION);
+        }
+
+        //start google api client
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode)
+        {
+            case Constants.PERMISSION_ACCESS_COARSE_LOCATION:
+                if(grantResults.length < 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED)
+                {
+                    //TODO notice user to turn on permission
+                }
+                break;
+        }
     }
 
     /**
@@ -70,7 +114,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         mLayoutManager = new LinearLayoutManager(getApplicationContext());
         mResultListRecyclerView.setLayoutManager(mLayoutManager);
 
-        mResultAdapter = new ResultListAdapter(mListResult, this);
+        mResultAdapter = new ResultListAdapter(mListResult, this,mInitialLocation);
         mResultListRecyclerView.setAdapter(mResultAdapter);
 
         mProgressDialog = new ProgressDialog(this);
@@ -91,11 +135,14 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        //show loading dialog
-        mProgressDialog.show();
-
-        searchLocation(query);
-        return false;
+        if(mLocation != null)
+        {
+            //show loading dialog
+            mProgressDialog.show();
+            mInitialLocation = new LatLng(mLocation.getLatitude(),mLocation.getLongitude());
+            searchLocation(query);
+        }
+        return true;
     }
 
     @Override
@@ -109,7 +156,6 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
      */
     private void searchLocation(String query) {
         //TODO update current location later
-        mInitialLocation = new LatLng(10.783213, 106.6359773);
         String currentlocationVariable = mInitialLocation.latitude + "," + mInitialLocation.longitude;
 
         mGoogleAPI = GoogleServiceGenerator.createService(GoogleAPI.class);
@@ -147,6 +193,9 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     public void onMapViewClick(View view) {
         //TODO should find the way to add results (using parcelable is an option)
         Intent intent = new Intent(this, MapsActivity.class);
+        //put initial LatLng into intent
+        intent.putExtra(Constants.INITIAL_LAT_LOCATION,mInitialLocation.latitude);
+        intent.putExtra(Constants.INITIAL_LNG_LOCATION,mInitialLocation.longitude);
         startActivity(intent);
     }
 
@@ -157,5 +206,40 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     private void makeToast(String message) {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
         toast.show();
+    }
+
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        //TODO implement runtime permission request for android 6.0 or greater
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        else {
+            //get the location from service
+            mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
     }
 }

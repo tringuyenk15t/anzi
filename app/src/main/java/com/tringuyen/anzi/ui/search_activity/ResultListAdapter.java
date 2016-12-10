@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.maps.model.LatLng;
 import com.tringuyen.anzi.Constants;
 import com.tringuyen.anzi.R;
 import com.tringuyen.anzi.model.google.google_search_activity.Result;
@@ -24,11 +25,12 @@ import java.util.List;
 public class ResultListAdapter extends RecyclerView.Adapter {
     private List<Result> mResultList;
     private final Context mConstext;
-
-    public ResultListAdapter(List<Result> resultList, Context context)
+    private LatLng mInitinalLocation;
+    public ResultListAdapter(List<Result> resultList, Context context,LatLng initialLocation)
     {
         mResultList = resultList;
         mConstext = context;
+        mInitinalLocation = initialLocation;
     }
 
     @Override
