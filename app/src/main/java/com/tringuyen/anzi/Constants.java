@@ -14,12 +14,11 @@ public class Constants {
     //TODO update http builder later
     public static final String TEMP_IMAGE_URL =
             "https://maps.googleapis.com/maps/api/place/photo?key=AIzaSyC_SieEFJm4VPiOJa8T0D8P8-RgzPutuIg&maxheight=300&maxwidth=300&photoreference=";
-
     public static final String TEMP_DETAIL_IMAGE_URL =
             "https://maps.googleapis.com/maps/api/place/photo?key=AIzaSyC_SieEFJm4VPiOJa8T0D8P8-RgzPutuIg&maxheight=500&maxwidth=800&photoreference=";
 
     public static final String INITIAL_LAT_LOCATION = "iniLat";
     public static final String INITIAL_LNG_LOCATION = "iniLng";
 
-    public static final int PERMISSION_ACCESS_COARSE_LOCATION = 70;
+    public static final int PERMISSION_ACCESS_FINE_LOCATION = 70;
 }

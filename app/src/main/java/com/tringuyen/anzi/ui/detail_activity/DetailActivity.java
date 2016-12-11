@@ -104,6 +104,8 @@ public class DetailActivity extends AppCompatActivity {
     {
         //TODO implement mapview with direction to location
         Intent intent = new Intent(this, MapsActivity.class);
+        intent.putExtra(Constants.INITIAL_LAT_LOCATION,mInitialLocation.latitude);
+        intent.putExtra(Constants.INITIAL_LNG_LOCATION,mInitialLocation.longitude);
         startActivity(intent);
     }
 }

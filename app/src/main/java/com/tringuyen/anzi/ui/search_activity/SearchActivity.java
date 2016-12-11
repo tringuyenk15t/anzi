@@ -70,11 +70,11 @@ public class SearchActivity extends AppCompatActivity implements
         initinalizeScreen();
 
 //        implement runtime permission
-        if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
             ActivityCompat.requestPermissions(this,new String[] {
-                            Manifest.permission.ACCESS_COARSE_LOCATION},
-                    Constants.PERMISSION_ACCESS_COARSE_LOCATION);
+                            Manifest.permission.ACCESS_FINE_LOCATION},
+                    Constants.PERMISSION_ACCESS_FINE_LOCATION);
         }
 
         //start google api client
@@ -91,7 +91,7 @@ public class SearchActivity extends AppCompatActivity implements
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode)
         {
-            case Constants.PERMISSION_ACCESS_COARSE_LOCATION:
+            case Constants.PERMISSION_ACCESS_FINE_LOCATION:
                 if(grantResults.length < 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED)
                 {
                     //TODO notice user to turn on permission
@@ -140,6 +140,7 @@ public class SearchActivity extends AppCompatActivity implements
             //show loading dialog
             mProgressDialog.show();
             mInitialLocation = new LatLng(mLocation.getLatitude(),mLocation.getLongitude());
+            mResultAdapter.setmInitialLocation(mInitialLocation);
             searchLocation(query);
         }
         return true;
@@ -212,7 +213,7 @@ public class SearchActivity extends AppCompatActivity implements
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         //TODO implement runtime permission request for android 6.0 or greater
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         else {
