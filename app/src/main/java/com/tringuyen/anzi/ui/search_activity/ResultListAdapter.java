@@ -25,12 +25,13 @@ import java.util.List;
 public class ResultListAdapter extends RecyclerView.Adapter {
     private List<Result> mResultList;
     private final Context mConstext;
-    private LatLng mInitinalLocation;
+    private LatLng mInitialLocation;
+
     public ResultListAdapter(List<Result> resultList, Context context,LatLng initialLocation)
     {
         mResultList = resultList;
         mConstext = context;
-        mInitinalLocation = initialLocation;
+        mInitialLocation = initialLocation;
     }
 
     @Override
@@ -66,9 +67,14 @@ public class ResultListAdapter extends RecyclerView.Adapter {
         ((ResultViewHolder) holder).cv_Item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mConstext, DetailActivity.class);
-                intent.putExtra(Constants.LOCATION_ID,mResultList.get(position).getPlaceId());
-                mConstext.startActivity(intent);
+                //TODO consider to pass initial location
+                if(mInitialLocation != null) {
+                    Intent intent = new Intent(mConstext, DetailActivity.class);
+                    intent.putExtra(Constants.LOCATION_ID, mResultList.get(position).getPlaceId());
+                    intent.putExtra(Constants.INITIAL_LAT_LOCATION, mInitialLocation.latitude);
+                    intent.putExtra(Constants.INITIAL_LNG_LOCATION, mInitialLocation.longitude);
+                    mConstext.startActivity(intent);
+                }
             }
         });
     }
@@ -92,5 +98,9 @@ public class ResultListAdapter extends RecyclerView.Adapter {
     }
     public int getItemCount() {
         return mResultList.size();
+    }
+
+    public void setmInitialLocation(LatLng mInitialLocation) {
+        this.mInitialLocation = mInitialLocation;
     }
 }
