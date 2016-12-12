@@ -106,6 +106,7 @@ public class DetailActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MapsActivity.class);
         intent.putExtra(Constants.INITIAL_LAT_LOCATION,mInitialLocation.latitude);
         intent.putExtra(Constants.INITIAL_LNG_LOCATION,mInitialLocation.longitude);
+        intent.putExtra(Constants.MAP_FLAG,Constants.DETAIL_TO_MAP_FLAG);
         startActivity(intent);
     }
 }

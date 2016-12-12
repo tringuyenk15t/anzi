@@ -21,4 +21,8 @@ public class Constants {
     public static final String INITIAL_LNG_LOCATION = "iniLng";
 
     public static final int PERMISSION_ACCESS_FINE_LOCATION = 70;
+
+    public static final int DETAIL_TO_MAP_FLAG = 1;
+    public static final int SEARCH_TO_MAP_FLAG = 0;
+    public static final String MAP_FLAG = "mapFlag";
 }

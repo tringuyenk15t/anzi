@@ -22,6 +22,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LatLng mInitialLocation;
     private GoogleMap mMap;
     private Toolbar mToolbar;
+    private int mFlag;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,16 +34,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         double lat = intent.getDoubleExtra(Constants.INITIAL_LAT_LOCATION,0.0);
         double lng = intent.getDoubleExtra(Constants.INITIAL_LNG_LOCATION,0.0);
         mInitialLocation = new LatLng(lat,lng);
-
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitle(Constants.TOOLBAR_TITLE);
-        setSupportActionBar(mToolbar);
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
+        intializedView();
     }
 
     @Override
@@ -59,5 +52,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mMap.moveCamera(CameraUpdateFactory.newLatLng(mInitialLocation));
         }
             mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+    }
+
+    private void intializedView()
+    {
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setTitle(Constants.TOOLBAR_TITLE);
+        setSupportActionBar(mToolbar);
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
 }
