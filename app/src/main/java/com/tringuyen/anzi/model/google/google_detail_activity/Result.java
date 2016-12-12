@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.tringuyen.anzi.model.google.google_search_activity.Geometry;
+import com.tringuyen.anzi.model.google.google_search_activity.Photo;
 
 public class Result {
 

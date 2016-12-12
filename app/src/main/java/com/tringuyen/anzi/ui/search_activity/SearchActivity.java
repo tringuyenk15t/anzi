@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -95,6 +96,11 @@ public class SearchActivity extends AppCompatActivity implements
                 if(grantResults.length < 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED)
                 {
                     //TODO notice user to turn on permission
+                    // Create a warning dialog here
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("WARNING");
+                    builder.setMessage(getString(R.string.permissionWarning));
+                    builder.show();
                 }
                 break;
         }
@@ -135,6 +141,7 @@ public class SearchActivity extends AppCompatActivity implements
 
     @Override
     public boolean onQueryTextSubmit(String query) {
+        //make sure location service work correctly before searching
         if(mLocation != null)
         {
             //show loading dialog
@@ -156,7 +163,7 @@ public class SearchActivity extends AppCompatActivity implements
      * @param query
      */
     private void searchLocation(String query) {
-        //TODO update current location later
+        //change location into http url format
         String currentlocationVariable = mInitialLocation.latitude + "," + mInitialLocation.longitude;
 
         mGoogleAPI = GoogleServiceGenerator.createService(GoogleAPI.class);
@@ -197,6 +204,7 @@ public class SearchActivity extends AppCompatActivity implements
         //put initial LatLng into intent
         intent.putExtra(Constants.INITIAL_LAT_LOCATION,mInitialLocation.latitude);
         intent.putExtra(Constants.INITIAL_LNG_LOCATION,mInitialLocation.longitude);
+        intent.putExtra(Constants.MAP_FLAG,Constants.SEARCH_TO_MAP_FLAG);
         startActivity(intent);
     }
 
@@ -212,7 +220,6 @@ public class SearchActivity extends AppCompatActivity implements
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        //TODO implement runtime permission request for android 6.0 or greater
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
