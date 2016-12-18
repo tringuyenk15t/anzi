@@ -1,12 +1,15 @@
 
 package com.tringuyen.anzi.model.google.google_search_activity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Photo {
+public class Photo implements Parcelable {
 
     @SerializedName("height")
     @Expose
@@ -20,6 +23,36 @@ public class Photo {
     @SerializedName("width")
     @Expose
     private Integer width;
+
+    protected Photo(Parcel in) {
+        height = in.readInt();
+        width=in.readInt();
+        photoReference = in.readString();
+    }
+
+    public static final Creator<Photo> CREATOR = new Creator<Photo>() {
+        @Override
+        public Photo createFromParcel(Parcel in) {
+            return new Photo(in);
+        }
+
+        @Override
+        public Photo[] newArray(int size) {
+            return new Photo[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(height);
+        dest.writeInt(width);
+        dest.writeString(photoReference);
+    }
 
     /**
      * 

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -172,6 +173,7 @@ public class SearchActivity extends AppCompatActivity implements
             @Override
             public void onResponse(Call<GoogleResponse> call, Response<GoogleResponse> response) {
                 //save result data
+                String a = call.request().url().toString();
                 GoogleResponse dataResult = response.body();
                 //let user know if there no result match input text
                 if (dataResult.getResults().size() < 1) {
@@ -205,6 +207,7 @@ public class SearchActivity extends AppCompatActivity implements
         intent.putExtra(Constants.INITIAL_LAT_LOCATION,mInitialLocation.latitude);
         intent.putExtra(Constants.INITIAL_LNG_LOCATION,mInitialLocation.longitude);
         intent.putExtra(Constants.MAP_FLAG,Constants.SEARCH_TO_MAP_FLAG);
+        intent.putExtra(Constants.LOCATION_LIST,(ArrayList<? extends Parcelable>)mListResult);
         startActivity(intent);
     }
 

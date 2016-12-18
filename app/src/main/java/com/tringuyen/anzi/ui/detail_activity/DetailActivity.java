@@ -9,15 +9,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.model.LatLng;
 import com.tringuyen.anzi.Constants;
-import com.tringuyen.anzi.LocalLibrary;
 import com.tringuyen.anzi.R;
 import com.tringuyen.anzi.model.google.google_detail_activity.GoogleDetailResponse;
-import com.tringuyen.anzi.model.google.google_detail_activity.Result;
+import com.tringuyen.anzi.model.google.google_detail_activity.DetailResult;
 import com.tringuyen.anzi.network.GoogleAPI;
 import com.tringuyen.anzi.network.GoogleServiceGenerator;
 import com.tringuyen.anzi.ui.map.MapsActivity;
@@ -33,7 +31,7 @@ public class DetailActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private ProgressDialog mProgressDiaglog;
     private GoogleAPI googleAPI;
-    private Result mDetailLocation;
+    private DetailResult mDetailLocation;
 
     private LatLng mInitialLocation;
     @Override
@@ -73,7 +71,7 @@ public class DetailActivity extends AppCompatActivity {
                 tv_Name.setText(mDetailLocation.getName());
                 tv_Address.setText(mDetailLocation.getVicinity());
 
-                if(mDetailLocation.getPhotos().size() > 0)
+                if(mDetailLocation.getPhotos() != null  && mDetailLocation.getPhotos().get(0) != null)
                 {
                     //TODO should show more image
                     Glide.with(getBaseContext())
@@ -107,6 +105,7 @@ public class DetailActivity extends AppCompatActivity {
         intent.putExtra(Constants.INITIAL_LAT_LOCATION,mInitialLocation.latitude);
         intent.putExtra(Constants.INITIAL_LNG_LOCATION,mInitialLocation.longitude);
         intent.putExtra(Constants.MAP_FLAG,Constants.DETAIL_TO_MAP_FLAG);
+        intent.putExtra(Constants.LOCATION_DETAIL,mDetailLocation);
         startActivity(intent);
     }
 }

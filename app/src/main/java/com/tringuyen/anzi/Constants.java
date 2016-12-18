@@ -25,4 +25,12 @@ public class Constants {
     public static final int DETAIL_TO_MAP_FLAG = 1;
     public static final int SEARCH_TO_MAP_FLAG = 0;
     public static final String MAP_FLAG = "mapFlag";
+
+    public static final String LOCATION_LIST = "locationList";
+    public static final String LOCATION_DETAIL = "locationDetail";
+
+    public static final String DETAIL_MARKER = "detailMarker";
+    public static final String NORMAL_MARKER = "normalMarker";
+
+    public static final String INITIAL_LOCATION_TITLE = "Initial location";
 }

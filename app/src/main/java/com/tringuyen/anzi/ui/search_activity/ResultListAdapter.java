@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -49,7 +50,12 @@ public class ResultListAdapter extends RecyclerView.Adapter {
         ((ResultViewHolder)holder).tv_ResultAddress
                 .setText(mResultList.get(position).getVicinity());
 
-        if(mResultList.get(position).getPhotos().size() > 0) {
+        if(mResultList.get(position).getRating() != null)
+        {
+            ((ResultViewHolder)holder).rtb_Rating.setRating(Float.parseFloat(mResultList.get(position).getRating().toString()));
+        }
+
+        if(mResultList.get(position).getPhotos() != null && mResultList.get(position).getPhotos().get(0) != null) {
             Glide.with(mConstext)
                     .load(Constants.TEMP_IMAGE_URL + mResultList.get(position).getPhotos().get(0).getPhotoReference())
                     .centerCrop()
@@ -83,15 +89,15 @@ public class ResultListAdapter extends RecyclerView.Adapter {
     public static class ResultViewHolder extends RecyclerView.ViewHolder
     {
         public CardView cv_Item;
-        public TextView tv_ResultName,tv_ResultDistance, tv_ResultAddress;
+        public TextView tv_ResultName, tv_ResultAddress;
         public ImageView img_Image;
+        public RatingBar rtb_Rating;
         public ResultViewHolder(View itemView) {
             super(itemView);
             img_Image = (ImageView) itemView.findViewById(R.id.image_view_avatar);
             tv_ResultName = (TextView) itemView.findViewById(R.id.text_view_name);
             cv_Item = (CardView) itemView.findViewById(R.id.card_view_result_item);
-            //TODO calculate distance later
-//            tv_ResultDistance = (TextView) itemView.findViewById(R.id.text_view_distance);
+            rtb_Rating = (RatingBar) itemView.findViewById(R.id.rating_bar_location_rating);
             tv_ResultAddress = (TextView) itemView.findViewById(R.id.text_view_address);
 
         }
