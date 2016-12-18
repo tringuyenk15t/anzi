@@ -1,12 +1,15 @@
 
 package com.tringuyen.anzi.model.google.google_search_activity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Result {
+public class Result  implements Parcelable{
 
     @SerializedName("geometry")
     @Expose
@@ -47,6 +50,59 @@ public class Result {
     @SerializedName("price_level")
     @Expose
     private Integer priceLevel;
+
+
+    //begin parcelable
+    protected Result(Parcel in) {
+        placeId = in.readString();
+        name = in.readString();
+        vicinity = in.readString();
+        photos = in.createTypedArrayList(Photo.CREATOR);
+        rating = in.readDouble();
+        geometry = in.readParcelable(Geometry.class.getClassLoader());
+
+    }
+
+    // After implementing the `Parcelable` interface, we need to create the
+    // `Parcelable.Creator<MyParcelable> CREATOR` constant for our class;
+    // Notice how it has our class specified as its type.
+    public static final Creator<Result> CREATOR = new Creator<Result>() {
+        @Override
+        public Result createFromParcel(Parcel in) {
+            return new Result(in);
+        }
+
+        @Override
+        public Result[] newArray(int size) {
+            return new Result[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(placeId);
+        dest.writeString(name);
+        dest.writeString(vicinity);
+        dest.writeTypedList(photos);
+
+        if (rating != null)
+        {
+            dest.writeDouble(rating);
+        }
+        else
+        {
+            dest.writeDouble(-1.0);
+        }
+        dest.writeParcelable((Parcelable) geometry,flags);
+    }
+
+
+    //End parcelable
 
     /**
      * 
@@ -281,5 +337,4 @@ public class Result {
     public void setPriceLevel(Integer priceLevel) {
         this.priceLevel = priceLevel;
     }
-
 }

@@ -1,6 +1,9 @@
 
 package com.tringuyen.anzi.model.google.google_detail_activity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
@@ -8,7 +11,7 @@ import com.google.gson.annotations.SerializedName;
 import com.tringuyen.anzi.model.google.google_search_activity.Geometry;
 import com.tringuyen.anzi.model.google.google_search_activity.Photo;
 
-public class Result {
+public class DetailResult implements Parcelable {
 
     @SerializedName("address_components")
     @Expose
@@ -73,6 +76,55 @@ public class Result {
     @SerializedName("website")
     @Expose
     private String website;
+
+    protected DetailResult(Parcel in) {
+        placeId = in.readString();
+        name = in.readString();
+        photos = in.createTypedArrayList(Photo.CREATOR);
+        formattedAddress = in.readString();
+        adrAddress = in.readString();
+        rating = in.readDouble();
+        vicinity = in.readString();
+        website = in.readString();
+        geometry = in.readParcelable(Geometry.class.getClassLoader());
+    }
+
+    public static final Creator<DetailResult> CREATOR = new Creator<DetailResult>() {
+        @Override
+        public DetailResult createFromParcel(Parcel in) {
+            return new DetailResult(in);
+        }
+
+        @Override
+        public DetailResult[] newArray(int size) {
+            return new DetailResult[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(placeId);
+        dest.writeString(name);
+        dest.writeTypedList(photos);
+        dest.writeString(formattedAddress);
+        dest.writeString(adrAddress);
+        if(rating == null)
+        {
+            dest.writeDouble(-1.0);
+        }
+        else
+        {
+            dest.writeDouble(rating);
+        }
+        dest.writeString(vicinity);
+        dest.writeString(website);
+        dest.writeParcelable((Parcelable) geometry,flags);
+    }
 
     /**
      * 

@@ -14,7 +14,7 @@ public class GoogleDetailResponse {
     private List<Object> htmlAttributions = new ArrayList<Object>();
     @SerializedName("result")
     @Expose
-    private Result result;
+    private DetailResult result;
     @SerializedName("status")
     @Expose
     private String status;
@@ -42,7 +42,7 @@ public class GoogleDetailResponse {
      * @return
      *     The result
      */
-    public Result getResult() {
+    public DetailResult getResult() {
         return result;
     }
 
@@ -51,7 +51,7 @@ public class GoogleDetailResponse {
      * @param result
      *     The result
      */
-    public void setResult(Result result) {
+    public void setResult(DetailResult result) {
         this.result = result;
     }
 
