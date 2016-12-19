@@ -82,7 +82,7 @@ public class DetailActivity extends AppCompatActivity {
                 else
                 {
                     Glide.with(getBaseContext())
-                            .load(R.drawable.ic_detail_default_image)
+                            .load(R.drawable.ic_default_image)
                             .centerCrop()
                             .into(img_LocationImage);
                 }

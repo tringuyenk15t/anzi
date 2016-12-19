@@ -48,10 +48,18 @@ public class ResultListAdapter extends RecyclerView.Adapter {
         ((ResultViewHolder)holder).tv_ResultName
                 .setText(mResultList.get(position).getName());
         ((ResultViewHolder)holder).tv_ResultAddress
-                .setText(mResultList.get(position).getVicinity());
-
-        if(mResultList.get(position).getRating() != null)
+                .setText(mConstext.getString(R.string.addressTitle)+" "+ mResultList.get(position).getVicinity());
+        //show rating bar, if rating is null, rating bar will be hidden
+        if(mResultList.get(position).getRating() == null)
         {
+            ((ResultViewHolder)holder).tv_Rating.setText("N/A");
+            ((ResultViewHolder)holder).rtb_Rating.setVisibility(View.GONE);
+        }
+        else
+        {
+            ((ResultViewHolder)holder).rtb_Rating.setVisibility(View.VISIBLE);
+
+            ((ResultViewHolder)holder).tv_Rating.setText(mResultList.get(position).getRating() +"");
             ((ResultViewHolder)holder).rtb_Rating.setRating(Float.parseFloat(mResultList.get(position).getRating().toString()));
         }
 
@@ -73,7 +81,6 @@ public class ResultListAdapter extends RecyclerView.Adapter {
         ((ResultViewHolder) holder).cv_Item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO consider to pass initial location
                 if(mInitialLocation != null) {
                     Intent intent = new Intent(mConstext, DetailActivity.class);
                     intent.putExtra(Constants.LOCATION_ID, mResultList.get(position).getPlaceId());
@@ -85,21 +92,21 @@ public class ResultListAdapter extends RecyclerView.Adapter {
         });
     }
 
-
     public static class ResultViewHolder extends RecyclerView.ViewHolder
     {
         public CardView cv_Item;
-        public TextView tv_ResultName, tv_ResultAddress;
+        public TextView tv_ResultName, tv_ResultAddress,tv_Rating;
         public ImageView img_Image;
         public RatingBar rtb_Rating;
+
         public ResultViewHolder(View itemView) {
             super(itemView);
             img_Image = (ImageView) itemView.findViewById(R.id.image_view_avatar);
             tv_ResultName = (TextView) itemView.findViewById(R.id.text_view_name);
             cv_Item = (CardView) itemView.findViewById(R.id.card_view_result_item);
-            rtb_Rating = (RatingBar) itemView.findViewById(R.id.rating_bar_location_rating);
+            rtb_Rating = (RatingBar) itemView.findViewById(R.id.rating_bar_location_rating_start);
             tv_ResultAddress = (TextView) itemView.findViewById(R.id.text_view_address);
-
+            tv_Rating = (TextView) itemView.findViewById(R.id.text_view_rating_number);
         }
     }
     public int getItemCount() {

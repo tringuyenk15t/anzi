@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ import com.tringuyen.anzi.R;
 import com.tringuyen.anzi.model.google.google_detail_activity.DetailResult;
 import com.tringuyen.anzi.model.google.google_search_activity.Result;
 import com.tringuyen.anzi.ui.detail_activity.DetailActivity;
+import com.tringuyen.anzi.ui.search_activity.ResultListAdapter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -111,7 +113,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .title(String.valueOf(Constants.NORMAL_MARKER))
-                .snippet(r.getPlaceId()));
+                .snippet(r.getPlaceId())
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
                 builder.include(latLng);
             }
         }
@@ -124,7 +127,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mMap.addMarker(new MarkerOptions()
                     .position(detailLatLng)
                     .title(Constants.DETAIL_MARKER)
-                    .snippet(mDetailLocation.getPlaceId()));
+                    .snippet(mDetailLocation.getPlaceId())
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
             builder.include(detailLatLng);
         }
 
@@ -151,6 +155,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public View getInfoContents(Marker marker) {
         String markerName,markerAddress,imageUrl;
+        double rating = -1.0;
         imageUrl = null;
         if(marker.getTitle().equals(Constants.NORMAL_MARKER))
         {
@@ -161,6 +166,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             if(tempResult.getPhotos() != null && tempResult.getPhotos().get(0) != null) {
                 imageUrl = Constants.TEMP_IMAGE_URL + tempResult.getPhotos().get(0).getPhotoReference();
             }
+            if(tempResult.getRating() != null)
+            {
+                rating = tempResult.getRating();
+            }
         }
         else if (marker.getTitle().equals(Constants.DETAIL_MARKER))
         {
@@ -169,12 +178,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             if(mDetailLocation.getPhotos() != null && mDetailLocation.getPhotos().get(0) != null) {
                 imageUrl = Constants.TEMP_IMAGE_URL + mDetailLocation.getPhotos().get(0).getPhotoReference();
             }
+            if(mDetailLocation.getRating() != null)
+            {
+                rating = mDetailLocation.getRating();
+            }
         }
         else
         {
             return null;
         }
-        return infoWindowBinding(marker,markerName,markerAddress,imageUrl);
+        return infoWindowBinding(marker,markerName,markerAddress,imageUrl,rating);
     }
 
     @Override
@@ -202,16 +215,32 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return item;
     }
 
-    private View infoWindowBinding (Marker marker,String name, String address, String photoUrl)
+    private View infoWindowBinding (Marker marker,String name, String address, String photoUrl,double rating)
     {
         View v = getLayoutInflater().inflate(R.layout.adapter_marker_infowindow,null);
         TextView tvName = (TextView) v.findViewById(R.id.text_view_marker_name);
         TextView tvAddress = (TextView) v.findViewById(R.id.text_view_marker_address);
         ImageView imgvPhoto = (ImageView) v.findViewById(R.id.image_view_maker_photo);
-
+        TextView tvRating = (TextView) v.findViewById(R.id.text_view_rating_number);
+        RatingBar rtbRating = (RatingBar) v.findViewById(R.id.rating_bar_location_rating_start);
 
         tvName.setText(name);
-        tvAddress.setText(address);
+        tvAddress.setText(getString(R.string.addressTitle)+" "+address);
+        imgvPhoto.setImageResource(R.drawable.ic_default_image);
+
+        if(rating == -1.0)
+        {
+            tvRating.setText("N/A");
+            rtbRating.setVisibility(View.GONE);
+        }
+        else
+        {
+            rtbRating.setVisibility(View.VISIBLE);
+
+            tvRating.setText(rating +"");
+            rtbRating.setRating(Float.parseFloat(rating+""));
+        }
+
         //load photo
         Bitmap image = images.get(marker);
         if (image == null)
