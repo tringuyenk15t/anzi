@@ -37,19 +37,34 @@
                 android:maxLines="1"
                 android:ellipsize="end" />
 
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12dp"
+                    android:paddingRight="4dp"
+                    android:text="Rating:"/>
 
                 <android.support.v7.widget.AppCompatRatingBar
-                    android:id="@+id/rating_bar_location_rating"
+                    android:id="@+id/rating_bar_location_rating_start"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:stepSize="0.2"
                     android:numStars="5"
                     style="?android:attr/ratingBarStyleSmall"
-                    android:progressTint="@android:color/holo_blue_bright"/>
-            </FrameLayout>
+                    android:progressTint="@android:color/holo_orange_light"/>
+
+                <TextView
+                    android:id="@+id/text_view_rating_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12dp"
+                    android:paddingLeft="4dp"/>
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"

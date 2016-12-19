@@ -9,9 +9,24 @@
         android:icon="@drawable/ic_search_white_24dp"
         app:actionViewClass="android.support.v7.widget.SearchView"/>
 
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="Setting"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+    <!--implement search with filter-->
+
+    <!--<item-->
+        <!--android:id="@+id/action_food"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:title="Food search"-->
+        <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>-->
+
+    <!--<item-->
+        <!--android:id="@+id/action_drink"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:title="Drink search"-->
+        <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>-->
+
+    <!--<item-->
+        <!--android:id="@+id/action_food_and_drink"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:title="Food & Drink search"-->
+        <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>-->
+
 </menu>

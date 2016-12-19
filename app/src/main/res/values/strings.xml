@@ -9,6 +9,8 @@
     <string name="searchProgressTitle">Loading</string>
     <string name="searchProgressMessage">Searching in progress...</string>
     <string name="permissionWarning">This app will not work without location permission. Please restart this app and enable permission!</string>
+    <string name="ratingTitle">Rating:</string>
+    <string name="addressTitle">Address:</string>
     <!--Detail activity-->
     <string name="detailProgressTitle">Loading</string>
     <string name="detailProgressMessage">Getting location...</string>
