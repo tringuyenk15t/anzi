@@ -4,6 +4,10 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SnapHelper;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -14,11 +18,19 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.model.LatLng;
 import com.tringuyen.anzi.Constants;
 import com.tringuyen.anzi.R;
+import com.tringuyen.anzi.model.event_bus.PhotoClickEvent;
 import com.tringuyen.anzi.model.google.google_detail_activity.GoogleDetailResponse;
 import com.tringuyen.anzi.model.google.google_detail_activity.DetailResult;
+import com.tringuyen.anzi.model.google.google_search_activity.Photo;
 import com.tringuyen.anzi.network.GoogleAPI;
 import com.tringuyen.anzi.network.GoogleServiceGenerator;
 import com.tringuyen.anzi.ui.map.MapsActivity;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -26,12 +38,18 @@ import retrofit2.Response;
 
 public class DetailActivity extends AppCompatActivity {
     private String mLocationID;
-    private TextView tv_Name, tv_Address;
-    private ImageView img_LocationImage;
+    private TextView mNameTextView, mAddressTextView;
+    private ImageView mLargePhotoImageView;
     private Toolbar mToolbar;
     private ProgressDialog mProgressDiaglog;
     private GoogleAPI googleAPI;
     private DetailResult mDetailLocation;
+
+    private RecyclerView mPhotoListRecyclerView;
+    private RecyclerView.LayoutManager mPhotoListManager;
+    private RecyclerView.Adapter mPhotoListAdapter;
+
+    private List<Photo> mPhotoList;
 
     private LatLng mInitialLocation;
     @Override
@@ -47,12 +65,23 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void initializedView() {
-        tv_Name = (TextView) findViewById(R.id.text_view_name);
-        tv_Address = (TextView) findViewById(R.id.text_view_address);
-        img_LocationImage = (ImageView) findViewById(R.id.image_view_avatar);
+        mNameTextView = (TextView) findViewById(R.id.text_view_name);
+        mAddressTextView = (TextView) findViewById(R.id.text_view_address);
+        mLargePhotoImageView = (ImageView) findViewById(R.id.image_view_avatar);
+        mPhotoListRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_photo_list);
+        mPhotoListManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
 
+        //toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
+
+        //photolist
+        mPhotoListRecyclerView.setLayoutManager(mPhotoListManager);
+        SnapHelper snapHelper = new LinearSnapHelper();
+        snapHelper.attachToRecyclerView(mPhotoListRecyclerView);
+        mPhotoList = new ArrayList<>();
+        mPhotoListAdapter = new PhotoListAdapter(this,mPhotoList);
+        mPhotoListRecyclerView.setAdapter(mPhotoListAdapter);
 
         mProgressDiaglog = new ProgressDialog(this);
         mProgressDiaglog.setTitle(getString(R.string.detailProgressTitle));
@@ -68,23 +97,32 @@ public class DetailActivity extends AppCompatActivity {
             public void onResponse(Call<GoogleDetailResponse> call, Response<GoogleDetailResponse> response) {
 
                 mDetailLocation = response.body().getResult();
-                tv_Name.setText(mDetailLocation.getName());
-                tv_Address.setText(mDetailLocation.getVicinity());
+                mNameTextView.setText(mDetailLocation.getName());
+                mAddressTextView.setText(mDetailLocation.getVicinity());
 
                 if(mDetailLocation.getPhotos() != null  && mDetailLocation.getPhotos().get(0) != null)
                 {
-                    //TODO should show more image
+                    mPhotoListRecyclerView.setVisibility(View.VISIBLE);
+                    //load photo sub list
+                    mPhotoList.clear();
+                    mPhotoList.addAll(mDetailLocation.getPhotos());
+                    mPhotoListAdapter.notifyDataSetChanged();
+                    //load main photo
                     Glide.with(getBaseContext())
                             .load(Constants.TEMP_DETAIL_IMAGE_URL + mDetailLocation.getPhotos().get(0).getPhotoReference())
                             .centerCrop()
-                            .into(img_LocationImage);
+                            .into(mLargePhotoImageView);
+
                 }
                 else
                 {
+                    //hide photo list
+                    mPhotoListRecyclerView.setVisibility(View.GONE);
+                    //load default main photo when photo list is null
                     Glide.with(getBaseContext())
                             .load(R.drawable.ic_default_image)
                             .centerCrop()
-                            .into(img_LocationImage);
+                            .into(mLargePhotoImageView);
                 }
 
                 mProgressDiaglog.dismiss();
@@ -100,12 +138,33 @@ public class DetailActivity extends AppCompatActivity {
 
     public void onDirectionCLicked(View view)
     {
-        //TODO implement mapview with direction to location
+        //TODO add direction on map
         Intent intent = new Intent(this, MapsActivity.class);
         intent.putExtra(Constants.INITIAL_LAT_LOCATION,mInitialLocation.latitude);
         intent.putExtra(Constants.INITIAL_LNG_LOCATION,mInitialLocation.longitude);
         intent.putExtra(Constants.MAP_FLAG,Constants.DETAIL_TO_MAP_FLAG);
         intent.putExtra(Constants.LOCATION_DETAIL,mDetailLocation);
         startActivity(intent);
+    }
+
+    @Subscribe
+    public void onPhotoClickEvent(PhotoClickEvent event)
+    {
+        Glide.with(this)
+                .load(Constants.TEMP_DETAIL_IMAGE_URL + event.getmPhotoUrl())
+                .centerCrop()
+                .into(mLargePhotoImageView);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 }

@@ -201,7 +201,6 @@ public class SearchActivity extends AppCompatActivity implements
      * @param view
      */
     public void onMapViewClick(View view) {
-        //TODO should find the way to add results (using parcelable is an option)
         Intent intent = new Intent(this, MapsActivity.class);
         //put initial LatLng into intent
         intent.putExtra(Constants.INITIAL_LAT_LOCATION,mInitialLocation.latitude);

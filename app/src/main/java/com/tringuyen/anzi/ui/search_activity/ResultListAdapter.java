@@ -25,19 +25,19 @@ import java.util.List;
  */
 public class ResultListAdapter extends RecyclerView.Adapter {
     private List<Result> mResultList;
-    private final Context mConstext;
+    private final Context mContext;
     private LatLng mInitialLocation;
 
     public ResultListAdapter(List<Result> resultList, Context context,LatLng initialLocation)
     {
         mResultList = resultList;
-        mConstext = context;
+        mContext = context;
         mInitialLocation = initialLocation;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(mConstext).inflate(R.layout.adapter_result_item,parent,false);
+        View v = LayoutInflater.from(mContext).inflate(R.layout.adapter_result_item,parent,false);
         ResultViewHolder vh = new ResultViewHolder(v);
         return vh;
     }
@@ -48,7 +48,7 @@ public class ResultListAdapter extends RecyclerView.Adapter {
         ((ResultViewHolder)holder).tv_ResultName
                 .setText(mResultList.get(position).getName());
         ((ResultViewHolder)holder).tv_ResultAddress
-                .setText(mConstext.getString(R.string.addressTitle)+" "+ mResultList.get(position).getVicinity());
+                .setText(mContext.getString(R.string.addressTitle)+" "+ mResultList.get(position).getVicinity());
         //show rating bar, if rating is null, rating bar will be hidden
         if(mResultList.get(position).getRating() == null)
         {
@@ -64,7 +64,7 @@ public class ResultListAdapter extends RecyclerView.Adapter {
         }
 
         if(mResultList.get(position).getPhotos() != null && mResultList.get(position).getPhotos().get(0) != null) {
-            Glide.with(mConstext)
+            Glide.with(mContext)
                     .load(Constants.TEMP_IMAGE_URL + mResultList.get(position).getPhotos().get(0).getPhotoReference())
                     .centerCrop()
                     .error(R.drawable.ic_default_image)
@@ -72,7 +72,7 @@ public class ResultListAdapter extends RecyclerView.Adapter {
         }
         else
         {
-            Glide.with(mConstext)
+            Glide.with(mContext)
                     .load(R.drawable.ic_default_image)
                     .centerCrop()
                     .into(((ResultViewHolder) holder).img_Image);
@@ -82,11 +82,11 @@ public class ResultListAdapter extends RecyclerView.Adapter {
             @Override
             public void onClick(View v) {
                 if(mInitialLocation != null) {
-                    Intent intent = new Intent(mConstext, DetailActivity.class);
+                    Intent intent = new Intent(mContext, DetailActivity.class);
                     intent.putExtra(Constants.LOCATION_ID, mResultList.get(position).getPlaceId());
                     intent.putExtra(Constants.INITIAL_LAT_LOCATION, mInitialLocation.latitude);
                     intent.putExtra(Constants.INITIAL_LNG_LOCATION, mInitialLocation.longitude);
-                    mConstext.startActivity(intent);
+                    mContext.startActivity(intent);
                 }
             }
         });
