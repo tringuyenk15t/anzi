@@ -7,4 +7,12 @@
     <item name="colorAccent">@color/colorAccent</item>
     <item name="android:windowBackground">@color/grey</item>
     </style>
+
+    <style name="detailInfoText">
+        <item name="android:textSize">14dp</item>
+        <item name="android:maxLines">3</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:textIsSelectable">true</item>
+    </style>
 </resources>

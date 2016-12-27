@@ -15,7 +15,7 @@ public class Constants {
     public static final String TEMP_IMAGE_URL =
             "https://maps.googleapis.com/maps/api/place/photo?key=AIzaSyC_SieEFJm4VPiOJa8T0D8P8-RgzPutuIg&maxheight=300&maxwidth=300&photoreference=";
     public static final String TEMP_DETAIL_IMAGE_URL =
-            "https://maps.googleapis.com/maps/api/place/photo?key=AIzaSyC_SieEFJm4VPiOJa8T0D8P8-RgzPutuIg&maxheight=500&maxwidth=800&photoreference=";
+            "https://maps.googleapis.com/maps/api/place/photo?key=AIzaSyC_SieEFJm4VPiOJa8T0D8P8-RgzPutuIg&maxheight=650&maxwidth=500&photoreference=";
 
     public static final String INITIAL_LAT_LOCATION = "iniLat";
     public static final String INITIAL_LNG_LOCATION = "iniLng";
@@ -33,4 +33,6 @@ public class Constants {
     public static final String NORMAL_MARKER = "normalMarker";
 
     public static final String INITIAL_LOCATION_TITLE = "Initial location";
+
+    public static final String DIALOG_FRAGMENT_TAG = "setting_dialog";
 }

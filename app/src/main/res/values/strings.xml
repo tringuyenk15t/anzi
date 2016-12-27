@@ -3,7 +3,6 @@
     <string name="title_activity_maps">Map</string>
     <string name="search_hint">Input search key</string>
 
-
     <!--Search activity-->
     <string name="nullResult">Your query did not match any location!</string>
     <string name="searchProgressTitle">Loading</string>
@@ -15,5 +14,20 @@
     <string name="detailProgressTitle">Loading</string>
     <string name="detailProgressMessage">Getting location...</string>
 
+    <string name="not_available">N/A</string>
+    <!--Menu value-->
+    <string name="food_and_drink">Food and Drink</string>
+    <string name="food_search">Food search</string>
+    <string name="drink_search">Drink search</string>
 
+    <!--Settings-->
+    <string name="categorySearchTitle">Search category</string>
+    <string name="dialogPositiveButton">Yes</string>
+    <string name="dialogNegativeButton">No</string>
+
+    <string-array name="searchCategory">
+        <item>Food and Drindk</item>
+        <item>Foood</item>
+        <item>Drink</item>
+    </string-array>
 </resources>

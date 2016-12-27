@@ -1,6 +1,7 @@
 package com.tringuyen.anzi.network;
 
 import com.tringuyen.anzi.model.google.google_detail_activity.GoogleDetailResponse;
+import com.tringuyen.anzi.model.google.google_direction_direction.DirectionResponse;
 import com.tringuyen.anzi.model.google.google_search_activity.GoogleResponse;
 
 import retrofit2.Call;
@@ -19,4 +20,10 @@ public interface GoogleAPI {
 
     @GET("place/details/json")
     Call<GoogleDetailResponse> searchDetailResult(@Query("placeid") String resultID);
+
+    @GET("place/details/json")
+    Call<GoogleDetailResponse> searchDetailBySingleCategory(@Query("placeid") String placeID, @Query("types") String type);
+
+    @GET("directions/json")
+    Call<DirectionResponse> getDirection(@Query("origin") String origin, @Query("destination") String destination);
 }

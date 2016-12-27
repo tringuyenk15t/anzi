@@ -12,6 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -38,7 +40,9 @@ import retrofit2.Response;
 
 public class DetailActivity extends AppCompatActivity {
     private String mLocationID;
-    private TextView mNameTextView, mAddressTextView;
+    private TextView mNameTextView, mAddressTextView,mPhoneTextView,mWebsiteTextView,mRatingTextView;
+    private LinearLayout mAddressLinearLayout, mRatingLinearLayout, mPhoneLinearLayout,mWebsiteLinearLayout;
+    private RatingBar mRatingBar;
     private ImageView mLargePhotoImageView;
     private Toolbar mToolbar;
     private ProgressDialog mProgressDiaglog;
@@ -66,8 +70,19 @@ public class DetailActivity extends AppCompatActivity {
 
     private void initializedView() {
         mNameTextView = (TextView) findViewById(R.id.text_view_name);
+
         mAddressTextView = (TextView) findViewById(R.id.text_view_address);
-        mLargePhotoImageView = (ImageView) findViewById(R.id.image_view_avatar);
+        mAddressLinearLayout = (LinearLayout) findViewById(R.id.linear_layout_address);
+        mPhoneTextView = (TextView) findViewById(R.id.text_view_phone);
+        mPhoneLinearLayout = (LinearLayout) findViewById(R.id.linear_layout_phone);
+        mWebsiteTextView = (TextView) findViewById(R.id.text_view_website);
+        mWebsiteLinearLayout = (LinearLayout) findViewById(R.id.linear_layout_website);
+        mRatingTextView = (TextView) findViewById(R.id.text_view_rating_number);
+        mRatingLinearLayout = (LinearLayout) findViewById(R.id.linear_layout_rating);
+
+        mRatingBar = (RatingBar) findViewById(R.id.rating_bar_rating_start);
+
+        mLargePhotoImageView = (ImageView) findViewById(R.id.image_view_large_photo);
         mPhotoListRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_photo_list);
         mPhotoListManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
 
@@ -98,7 +113,31 @@ public class DetailActivity extends AppCompatActivity {
 
                 mDetailLocation = response.body().getResult();
                 mNameTextView.setText(mDetailLocation.getName());
-                mAddressTextView.setText(mDetailLocation.getVicinity());
+
+                if(mDetailLocation.getFormattedAddress()!= null)
+                {
+                    mAddressLinearLayout.setVisibility(View.VISIBLE);
+                    mAddressTextView.setText(mDetailLocation.getFormattedAddress());
+                }
+
+                if(mDetailLocation.getFormattedPhoneNumber() != null)
+                {
+                    mPhoneLinearLayout.setVisibility(View.VISIBLE);
+                     mPhoneTextView.setText(mDetailLocation.getFormattedPhoneNumber());
+                }
+
+                if(mDetailLocation.getWebsite() != null)
+                {
+                    mWebsiteLinearLayout.setVisibility(View.VISIBLE);
+                    mWebsiteTextView.setText(mDetailLocation.getWebsite());
+                }
+
+                if(mDetailLocation.getRating() != null)
+                {
+                    mRatingLinearLayout.setVisibility(View.VISIBLE);
+                    mRatingTextView.setText(mDetailLocation.getRating().toString());
+                    mRatingBar.setRating(Float.parseFloat(mDetailLocation.getRating().toString()));
+                }
 
                 if(mDetailLocation.getPhotos() != null  && mDetailLocation.getPhotos().get(0) != null)
                 {
@@ -112,12 +151,11 @@ public class DetailActivity extends AppCompatActivity {
                             .load(Constants.TEMP_DETAIL_IMAGE_URL + mDetailLocation.getPhotos().get(0).getPhotoReference())
                             .centerCrop()
                             .into(mLargePhotoImageView);
-
                 }
                 else
                 {
                     //hide photo list
-                    mPhotoListRecyclerView.setVisibility(View.GONE);
+//                    mPhotoListRecyclerView.setVisibility(View.GONE);
                     //load default main photo when photo list is null
                     Glide.with(getBaseContext())
                             .load(R.drawable.ic_default_image)
@@ -138,7 +176,6 @@ public class DetailActivity extends AppCompatActivity {
 
     public void onDirectionCLicked(View view)
     {
-        //TODO add direction on map
         Intent intent = new Intent(this, MapsActivity.class);
         intent.putExtra(Constants.INITIAL_LAT_LOCATION,mInitialLocation.latitude);
         intent.putExtra(Constants.INITIAL_LNG_LOCATION,mInitialLocation.longitude);

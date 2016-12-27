@@ -1,6 +1,7 @@
 package com.tringuyen.anzi.ui.search_activity;
 
 import android.Manifest;
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,6 +11,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -56,12 +58,9 @@ public class SearchActivity extends AppCompatActivity implements
     private GoogleAPI mGoogleAPI;
     private ProgressDialog mProgressDialog;
     private List<Result> mListResult;
-    private Location mLocation;
-    private LatLng mInitialLocation;
-
+    private Location mInitialLocation;
+    private LatLng mInitialLocationLatLng;
     private GoogleApiClient mGoogleApiClient;
-
-
 
     /**
      * @param savedInstanceState
@@ -72,7 +71,8 @@ public class SearchActivity extends AppCompatActivity implements
         initinalizeScreen();
 
 //        implement runtime permission
-        if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED)
         {
             ActivityCompat.requestPermissions(this,new String[] {
                             Manifest.permission.ACCESS_FINE_LOCATION},
@@ -90,7 +90,8 @@ public class SearchActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions
+            , @NonNull int[] grantResults) {
         switch (requestCode)
         {
             case Constants.PERMISSION_ACCESS_FINE_LOCATION:
@@ -121,7 +122,7 @@ public class SearchActivity extends AppCompatActivity implements
         mLayoutManager = new LinearLayoutManager(getApplicationContext());
         mResultListRecyclerView.setLayoutManager(mLayoutManager);
 
-        mResultAdapter = new ResultListAdapter(mListResult, this,mInitialLocation);
+        mResultAdapter = new ResultListAdapter(mListResult, this, mInitialLocationLatLng);
         mResultListRecyclerView.setAdapter(mResultAdapter);
 
         mProgressDialog = new ProgressDialog(this);
@@ -141,14 +142,31 @@ public class SearchActivity extends AppCompatActivity implements
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId())
+        {
+            case R.id.action_settings:
+                //TODO implement search setting here
+//                FragmentManager fragmentManager = getSupportFragmentManager();
+//                SettingDialogFragment settingDialogFragment = new SettingDialogFragment();
+//                settingDialogFragment.show(fragmentManager,Constants.DIALOG_FRAGMENT_TAG);
+                return true;
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public boolean onQueryTextSubmit(String query) {
         //make sure location service work correctly before searching
-        if(mLocation != null)
+        if(mInitialLocation != null)
         {
             //show loading dialog
             mProgressDialog.show();
-            mInitialLocation = new LatLng(mLocation.getLatitude(),mLocation.getLongitude());
-            mResultAdapter.setmInitialLocation(mInitialLocation);
+            mInitialLocationLatLng = new LatLng(mInitialLocation.getLatitude(), mInitialLocation.getLongitude());
+            mResultAdapter.setmInitialLocation(mInitialLocationLatLng);
             searchLocation(query);
         }
         return true;
@@ -165,21 +183,22 @@ public class SearchActivity extends AppCompatActivity implements
      */
     private void searchLocation(String query) {
         //change location into http url format
-        String currentlocationVariable = mInitialLocation.latitude + "," + mInitialLocation.longitude;
+        String currentlocationVariable = mInitialLocationLatLng.latitude + "," + mInitialLocationLatLng.longitude;
 
         mGoogleAPI = GoogleServiceGenerator.createService(GoogleAPI.class);
+        //TODO change to search by category (food, drink etc)
         Call<GoogleResponse> call = mGoogleAPI.searchResult(currentlocationVariable, query);
         call.enqueue(new Callback<GoogleResponse>() {
             @Override
             public void onResponse(Call<GoogleResponse> call, Response<GoogleResponse> response) {
+                //clear old data before show the new one
+                mListResult.clear();
                 //save result data
-                String a = call.request().url().toString();
                 GoogleResponse dataResult = response.body();
                 //let user know if there no result match input text
                 if (dataResult.getResults().size() < 1) {
                     makeToast(getString(R.string.nullResult));
                 } else {
-                    mListResult.clear();
                     mListResult.addAll(dataResult.getResults());
                     mResultAdapter.notifyDataSetChanged();
                 }
@@ -201,13 +220,15 @@ public class SearchActivity extends AppCompatActivity implements
      * @param view
      */
     public void onMapViewClick(View view) {
-        Intent intent = new Intent(this, MapsActivity.class);
-        //put initial LatLng into intent
-        intent.putExtra(Constants.INITIAL_LAT_LOCATION,mInitialLocation.latitude);
-        intent.putExtra(Constants.INITIAL_LNG_LOCATION,mInitialLocation.longitude);
-        intent.putExtra(Constants.MAP_FLAG,Constants.SEARCH_TO_MAP_FLAG);
-        intent.putExtra(Constants.LOCATION_LIST,(ArrayList<? extends Parcelable>)mListResult);
-        startActivity(intent);
+        if(mListResult != null) {
+            Intent intent = new Intent(this, MapsActivity.class);
+            //put initial LatLng into intent
+            intent.putExtra(Constants.INITIAL_LAT_LOCATION, mInitialLocationLatLng.latitude);
+            intent.putExtra(Constants.INITIAL_LNG_LOCATION, mInitialLocationLatLng.longitude);
+            intent.putExtra(Constants.MAP_FLAG, Constants.SEARCH_TO_MAP_FLAG);
+            intent.putExtra(Constants.LOCATION_LIST, (ArrayList<? extends Parcelable>) mListResult);
+            startActivity(intent);
+        }
     }
 
     /**
@@ -222,12 +243,13 @@ public class SearchActivity extends AppCompatActivity implements
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         else {
             //get the location from service
-            mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            mInitialLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         }
     }
 
