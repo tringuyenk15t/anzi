@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -89,6 +90,8 @@ public class DetailActivity extends AppCompatActivity {
         //toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         //photolist
         mPhotoListRecyclerView.setLayoutManager(mPhotoListManager);
@@ -154,8 +157,6 @@ public class DetailActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    //hide photo list
-//                    mPhotoListRecyclerView.setVisibility(View.GONE);
                     //load default main photo when photo list is null
                     Glide.with(getBaseContext())
                             .load(R.drawable.ic_default_image)
@@ -172,6 +173,15 @@ public class DetailActivity extends AppCompatActivity {
                 Log.e("Error: ", t.getMessage());
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home)
+        {
+            finish();// close this activity and return to preview activity (if there is any)
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void onDirectionCLicked(View view)

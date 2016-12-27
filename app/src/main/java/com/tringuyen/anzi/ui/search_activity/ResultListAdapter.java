@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -52,12 +53,11 @@ public class ResultListAdapter extends RecyclerView.Adapter {
         //show rating bar, if rating is null, rating bar will be hidden
         if(mResultList.get(position).getRating() == null)
         {
-            ((ResultViewHolder)holder).tv_Rating.setText("N/A");
-            ((ResultViewHolder)holder).rtb_Rating.setVisibility(View.GONE);
+            ((ResultViewHolder)holder).ln_Rating.setVisibility(View.GONE);
         }
         else
         {
-            ((ResultViewHolder)holder).rtb_Rating.setVisibility(View.VISIBLE);
+            ((ResultViewHolder)holder).ln_Rating.setVisibility(View.VISIBLE);
 
             ((ResultViewHolder)holder).tv_Rating.setText(mResultList.get(position).getRating() +"");
             ((ResultViewHolder)holder).rtb_Rating.setRating(Float.parseFloat(mResultList.get(position).getRating().toString()));
@@ -98,7 +98,7 @@ public class ResultListAdapter extends RecyclerView.Adapter {
         public TextView tv_ResultName, tv_ResultAddress,tv_Rating;
         public ImageView img_Image;
         public RatingBar rtb_Rating;
-
+        public LinearLayout ln_Rating;
         public ResultViewHolder(View itemView) {
             super(itemView);
             img_Image = (ImageView) itemView.findViewById(R.id.image_view_avatar);
@@ -107,6 +107,7 @@ public class ResultListAdapter extends RecyclerView.Adapter {
             rtb_Rating = (RatingBar) itemView.findViewById(R.id.rating_bar_location_rating_start);
             tv_ResultAddress = (TextView) itemView.findViewById(R.id.text_view_address);
             tv_Rating = (TextView) itemView.findViewById(R.id.text_view_rating_number);
+            ln_Rating = (LinearLayout) itemView.findViewById(R.id.linear_layout_rating);
         }
     }
     public int getItemCount() {

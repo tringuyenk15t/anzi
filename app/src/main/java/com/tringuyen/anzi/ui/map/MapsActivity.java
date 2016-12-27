@@ -11,8 +11,10 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -63,6 +65,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Polyline mCurrentPolyline;
     private final Map<Marker, Bitmap> images = new HashMap<>();
 
+    private List<Marker> markerList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +76,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void intializedView()
     {
+        markerList = new ArrayList<>();
         //get the initial location from intent
         Intent intent = getIntent();
         double lat = intent.getDoubleExtra(Constants.INITIAL_LAT_LOCATION,0.0);
@@ -86,6 +91,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitle(Constants.TOOLBAR_TITLE);
         setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         //initialize list of result and detail location base on intent
         if(mMapFlag == Constants.SEARCH_TO_MAP_FLAG)
@@ -103,6 +110,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home)
+        {
+            finish();// close this activity and return to preview activity (if there is any)
+        }
+        return super.onOptionsItemSelected(item);
+    }
     @Override
     public void onMapReady(GoogleMap googleMap) {
         //setup map
@@ -127,11 +142,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             {
                 LatLng latLng = new LatLng(r.getGeometry().getLocation().getLat(),
                         r.getGeometry().getLocation().getLng());
-                mMap.addMarker(new MarkerOptions()
-                .position(latLng)
-                .title(String.valueOf(Constants.NORMAL_MARKER))
-                .snippet(r.getPlaceId())
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                markerList.add(mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title(String.valueOf(Constants.NORMAL_MARKER))
+                        .snippet(r.getPlaceId())
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))));
                 builder.include(latLng);
             }
         }
@@ -141,26 +156,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         {
             LatLng detailLatLng = new LatLng(mDetailLocation.getGeometry().getLocation().getLat(),
                     mDetailLocation.getGeometry().getLocation().getLng());
-            mMap.addMarker(new MarkerOptions()
+            markerList.add( mMap.addMarker(new MarkerOptions()
                     .position(detailLatLng)
                     .title(Constants.DETAIL_MARKER)
                     .snippet(mDetailLocation.getPlaceId())
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))));
             builder.include(detailLatLng);
 
-            String origin = mInitialLocation.latitude + "," + mInitialLocation.longitude;
-            String destination = mDetailLocation.getGeometry().getLocation().getLat() +
-                    "," + mDetailLocation.getGeometry().getLocation().getLng();
-            setPolyline(origin,destination);
+            setPolyline(mInitialLocation,new LatLng(mDetailLocation.getGeometry().getLocation().getLat()
+                        ,mDetailLocation.getGeometry().getLocation().getLng()));
         }
 
         //add initial location with difference color
         if(mInitialLocation != null)
         {
-            mMap.addMarker(new MarkerOptions()
+            markerList.add(mMap.addMarker(new MarkerOptions()
                     .position(mInitialLocation)
                     .title(Constants.INITIAL_LOCATION_TITLE)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))));
             builder.include(mInitialLocation);
         }
 
@@ -170,12 +183,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     * Add polyline on maps
-     * @param origin - start point
-     * @param destination - destination user want to check
+     *
+     * @param originLatLng
+     * @param destinationLatLng
      */
-    private void setPolyline(String origin, String destination)
+    private void setPolyline(final LatLng originLatLng,final LatLng destinationLatLng)
     {
+        String origin = originLatLng.latitude + "," + originLatLng.longitude;
+        String destination = destinationLatLng.latitude + "," + destinationLatLng.longitude;
+
         GoogleAPI google_direction = GoogleServiceGenerator.createService(GoogleAPI.class);
         Call<DirectionResponse> call = google_direction.getDirection(origin,destination);
         call.enqueue(new Callback<DirectionResponse>() {
@@ -184,18 +200,40 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 DirectionResponse directionResponse = response.body();
 
                 List<LatLng> path = new ArrayList<LatLng>();
+                //add initial position to polyline path
+                path.add(mInitialLocation);
                 //add route latlng
                 for(Route singleRoute : directionResponse.getRoutes())
                 {
                     String encodedPath = singleRoute.getOverviewPolyline().getPoints().toString();
                     path.addAll(decodePolyLine(encodedPath));
                 }
+
                 PolylineOptions polylineOptions = new PolylineOptions();
                 polylineOptions.addAll(path);
                 mCurrentPolyline = mMap.addPolyline(polylineOptions
                                     .width(12)
                                     .color(ContextCompat
                                     .getColor(getApplicationContext(),R.color.colorPrimary)));
+                //remove other markers
+                if(markerList.size() > 1)
+                {
+                    for (int i = 0; i< markerList.size(); i++)
+                    {
+                        if((markerList.get(i).getPosition().latitude != originLatLng.latitude ||
+                            markerList.get(i).getPosition().longitude != originLatLng.longitude) &&
+                                (markerList.get(i).getPosition().latitude != destinationLatLng.latitude
+                                || markerList.get(i).getPosition().longitude != destinationLatLng.longitude)  )
+                        {
+                            markerList.get(i).remove();
+                        }
+                        else
+                        {
+                            //hide current infoWindow
+                            markerList.get(i).hideInfoWindow();
+                        }
+                    }
+                }
             }
 
             @Override
@@ -324,9 +362,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mCurrentPolyline.remove();
         }
         //draw polyline
-        String origin = mInitialLocation.latitude +","+mInitialLocation.longitude;
-        String destination = mSelectedMarkerLatLng.latitude + "," + mSelectedMarkerLatLng.longitude;
-        setPolyline(origin,destination);
+        setPolyline(mInitialLocation, mSelectedMarkerLatLng);
     }
 
     public Result getResultById(String resultID)
@@ -352,6 +388,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         ImageView imgvPhoto = (ImageView) v.findViewById(R.id.image_view_maker_photo);
         TextView tvRating = (TextView) v.findViewById(R.id.text_view_rating_number);
         RatingBar rtbRating = (RatingBar) v.findViewById(R.id.rating_bar_location_rating_start);
+        LinearLayout lnRating = (LinearLayout) v.findViewById(R.id.linear_layout_rating);
 
         tvName.setText(name);
         tvAddress.setText(getString(R.string.addressTitle)+" "+address);
@@ -359,13 +396,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if(rating == -1.0)
         {
-            tvRating.setText("N/A");
-            rtbRating.setVisibility(View.GONE);
+            lnRating.setVisibility(View.GONE);
         }
         else
         {
-            rtbRating.setVisibility(View.VISIBLE);
-
+            lnRating.setVisibility(View.VISIBLE);
             tvRating.setText(rating +"");
             rtbRating.setRating(Float.parseFloat(rating+""));
         }

@@ -34,7 +34,8 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity android:name=".ui.detail_activity.DetailActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>
