@@ -145,12 +145,12 @@ public class SearchActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId())
         {
-            case R.id.action_settings:
-                //TODO implement search setting here
+//            case R.id.action_settings:
+                //TODO implement search settings here
 //                FragmentManager fragmentManager = getSupportFragmentManager();
 //                SettingDialogFragment settingDialogFragment = new SettingDialogFragment();
 //                settingDialogFragment.show(fragmentManager,Constants.DIALOG_FRAGMENT_TAG);
-                return true;
+//                return true;
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
@@ -186,8 +186,8 @@ public class SearchActivity extends AppCompatActivity implements
         String currentlocationVariable = mInitialLocationLatLng.latitude + "," + mInitialLocationLatLng.longitude;
 
         mGoogleAPI = GoogleServiceGenerator.createService(GoogleAPI.class);
-        //TODO change to search by category (food, drink etc)
-        Call<GoogleResponse> call = mGoogleAPI.searchResult(currentlocationVariable, query);
+
+        Call<GoogleResponse> call = mGoogleAPI.searchResult(currentlocationVariable,Constants.TEMP_SEARCH_CATEGORY, query);
         call.enqueue(new Callback<GoogleResponse>() {
             @Override
             public void onResponse(Call<GoogleResponse> call, Response<GoogleResponse> response) {

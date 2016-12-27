@@ -16,13 +16,12 @@ public interface GoogleAPI {
     @GET("place/nearbysearch/json")
     Call<GoogleResponse> searchResult(
             @Query("location") String location,
+            @Query("types") String types,
             @Query("keyword") String query );
 
     @GET("place/details/json")
     Call<GoogleDetailResponse> searchDetailResult(@Query("placeid") String resultID);
 
-    @GET("place/details/json")
-    Call<GoogleDetailResponse> searchDetailBySingleCategory(@Query("placeid") String placeID, @Query("types") String type);
 
     @GET("directions/json")
     Call<DirectionResponse> getDirection(@Query("origin") String origin, @Query("destination") String destination);

@@ -11,6 +11,10 @@ public class Constants {
     public static final String GOOGLE_PALCE_API_KEY = "AIzaSyC_SieEFJm4VPiOJa8T0D8P8-RgzPutuIg";
 
     public static final String LOCATION_ID = "LocationID";
+
+    //TODO should update specific category when perform setting function
+    public static final String TEMP_SEARCH_CATEGORY = "food|restaurant|cafe|bar|liquor_store";
+
     //TODO update http builder later
     public static final String TEMP_IMAGE_URL =
             "https://maps.googleapis.com/maps/api/place/photo?key=AIzaSyC_SieEFJm4VPiOJa8T0D8P8-RgzPutuIg&maxheight=300&maxwidth=300&photoreference=";
