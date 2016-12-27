@@ -17,9 +17,11 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.map.MapsActivity"
             android:label="@string/title_activity_maps"></activity>
-        <activity android:name=".ui.search_activity.SearchActivity">
+        <activity android:name=".ui.search_activity.SearchActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
                 <action android:name="android.intent.action.MAIN" />
@@ -31,7 +33,8 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity android:name=".ui.detail_activity.DetailActivity"></activity>
+        <activity android:name=".ui.detail_activity.DetailActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>
