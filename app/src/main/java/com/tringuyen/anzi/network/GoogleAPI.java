@@ -17,8 +17,9 @@ public interface GoogleAPI {
     Call<GoogleResponse> searchResult(
             @Query("location") String location,
             @Query("types") String types,
+            @Query("rankby") String rankby,
             @Query("keyword") String query );
-
+//    @Query("types") String types,
     @GET("place/details/json")
     Call<GoogleDetailResponse> searchDetailResult(@Query("placeid") String resultID);
 

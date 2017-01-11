@@ -4,10 +4,12 @@ import android.Manifest;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -49,6 +51,7 @@ import retrofit2.Response;
 public class SearchActivity extends AppCompatActivity implements
         SearchView.OnQueryTextListener, GoogleApiClient.ConnectionCallbacks
         , GoogleApiClient.OnConnectionFailedListener {
+
     private Toolbar mToolbar;
     private SearchView mSearchView;
     private MenuItem mSearchItem;
@@ -70,7 +73,7 @@ public class SearchActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_search);
         initinalizeScreen();
 
-//        implement runtime permission
+        //implement runtime permission
         if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED)
         {
@@ -145,12 +148,10 @@ public class SearchActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId())
         {
-//            case R.id.action_settings:
-                //TODO implement search settings here
-//                FragmentManager fragmentManager = getSupportFragmentManager();
-//                SettingDialogFragment settingDialogFragment = new SettingDialogFragment();
-//                settingDialogFragment.show(fragmentManager,Constants.DIALOG_FRAGMENT_TAG);
-//                return true;
+            case R.id.action_settings:
+                Intent intent = new Intent(this,SettingsActivity.class);
+                startActivity(intent);
+                return true;
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
@@ -182,12 +183,21 @@ public class SearchActivity extends AppCompatActivity implements
      * @param query
      */
     private void searchLocation(String query) {
+        //apply rank by search from settings
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String rankby = sharedPreferences.getString(getString(R.string.pref_rank_by_key)
+                ,getString(R.string.pref_rank_by_distance_value));
+
         //change location into http url format
-        String currentlocationVariable = mInitialLocationLatLng.latitude + "," + mInitialLocationLatLng.longitude;
+        String currentlocationVariable = mInitialLocationLatLng.latitude + ","
+                                            + mInitialLocationLatLng.longitude;
 
         mGoogleAPI = GoogleServiceGenerator.createService(GoogleAPI.class);
-
-        Call<GoogleResponse> call = mGoogleAPI.searchResult(currentlocationVariable,Constants.TEMP_SEARCH_CATEGORY, query);
+        Call<GoogleResponse> call = mGoogleAPI.searchResult(
+                currentlocationVariable,
+                Constants.TEMP_SEARCH_CATEGORY_FOOD_DRINK, // make sure search result only for food and drink
+                rankby,
+                query);
         call.enqueue(new Callback<GoogleResponse>() {
             @Override
             public void onResponse(Call<GoogleResponse> call, Response<GoogleResponse> response) {

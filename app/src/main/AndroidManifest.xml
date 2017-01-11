@@ -36,6 +36,16 @@
         <activity android:name=".ui.detail_activity.DetailActivity"
             android:screenOrientation="portrait">
         </activity>
+
+        <activity
+            android:name=".ui.search_activity.SettingsActivity"
+            android:parentActivityName=".ui.search_activity.SearchActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.search_activity.SearchActivity" />
+        </activity>
     </application>
 
 </manifest>

@@ -12,8 +12,13 @@ public class Constants {
 
     public static final String LOCATION_ID = "LocationID";
 
-    //TODO should update specific category when perform setting function
-    public static final String TEMP_SEARCH_CATEGORY = "food|restaurant|cafe|bar|liquor_store";
+    /*constants for search type setting, it still remain some accuracy issues,
+        so i decided to hold this function for next updates
+     */
+//    public static final String TEMP_SEARCH_CATEGORY_FOOD = "food|restaurant";
+//    public static final String TEMP_SEARCH_CATEGORY_DRINK = "cafe|bar|liquor_store";
+
+    public static final String TEMP_SEARCH_CATEGORY_FOOD_DRINK = "food|restaurant|cafe|bar|liquor_store";
 
     //TODO update http builder later
     public static final String TEMP_IMAGE_URL =
