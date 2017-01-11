@@ -15,19 +15,49 @@
     <string name="detailProgressMessage">Getting location...</string>
 
     <string name="not_available">N/A</string>
-    <!--Menu value-->
-    <string name="food_and_drink">Food and Drink</string>
-    <string name="food_search">Food search</string>
-    <string name="drink_search">Drink search</string>
 
-    <!--Settings-->
-    <string name="categorySearchTitle">Search category</string>
-    <string name="dialogPositiveButton">Yes</string>
-    <string name="dialogNegativeButton">No</string>
+    <!--Category settings-->
+    <string name="pref_search_category_title">Search category</string>
+    <string name="pref_search_category_key">pref_search_category</string>
+    <!--labels-->
+    <string name="pref_search_category_label_all">Food and Drink search</string>
+    <string name="pref_search_category_label_food">Food search</string>
+    <string name="pref_search_category_label_drink">Drink search</string>
+    <!--values-->
+    <string name="pref_search_category_value_all">food_drink</string>
+    <string name="pref_search_category_value_food">food</string>
+    <string name="pref_search_category_value_drink">drink</string>
+    <!--labels array-->
+    <array name="pref_search_category_label_array">
+        <item>@string/pref_search_category_label_all</item>
+        <item>@string/pref_search_category_label_food</item>
+        <item>@string/pref_search_category_label_drink</item>
+    </array>
+    <!--values array-->
+    <array name="pref_search_category_value_array">
+        <item>@string/pref_search_category_value_all</item>
+        <item>@string/pref_search_category_value_food</item>
+        <item>@string/pref_search_category_value_drink</item>
+    </array>
 
-    <string-array name="searchCategory">
-        <item>Food and Drindk</item>
-        <item>Foood</item>
-        <item>Drink</item>
-    </string-array>
+    <!--Rank by settings-->
+    <string name="pref_rank_by_title">Rank by</string>
+    <string name="pref_rank_by_key">pref_rank_by</string>
+    <!--labels-->
+    <string name="pref_rank_by_prominence_label">Prominence</string>
+    <string name="pref_rank_by_distance_label">Distance</string>
+    <!--values-->
+    <string name="pref_rank_by_prominence_value">prominence</string>
+    <string name="pref_rank_by_distance_value">distance</string>
+    <!--labels array-->
+    <array name="pref_rank_by_label_array">
+        <item>@string/pref_rank_by_prominence_label</item>
+        <item>@string/pref_rank_by_distance_label</item>
+    </array>
+    <!--values array-->
+    <array name="pref_rank_by_value_array">
+        <item>@string/pref_rank_by_prominence_value</item>
+        <item>@string/pref_rank_by_distance_value</item>
+    </array>
+
 </resources>
